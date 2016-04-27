@@ -1,0 +1,13 @@
+{
+  "name": "icon-loader",
+  "version": "0.0.1",
+  "description": "Icon Loader",
+  "main": "app.js",
+  "author": "Me",
+  "dependencies": {
+    "cheerio": "latest",
+    "request": "latest",
+    "sync-request": "^3.0.1",
+    "wget-improved": "^1.3.0"
+  }
+}
