@@ -74,7 +74,7 @@ var tempDir = path.normalize(path.join(__dirname, '/temp'));
 fs.existsSync(tempDir) || fs.mkdirSync(tempDir);
 
 //Base url
-var url = 'http://iconmonstr.com/weather/page/2/'; 
+var url = 'http://iconmonstr.com/collections/'; 
 
 //Starts the *magic*
 drillPage(url, tempDir);
