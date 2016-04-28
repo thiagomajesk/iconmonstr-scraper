@@ -5,8 +5,9 @@ var cheerio = require('cheerio');
 var request = require('sync-request');
 var colors = require('colors/safe');
 var wget = require('wget-improved');
+var path = require('path');
 
-function drillPage(url){	
+function drillPage(url, downloadPath){	
 	console.log(colors.magenta.bgBlack('Scraping:\t' + url));
 
 	var response = request('GET', url);
@@ -34,15 +35,16 @@ function drillPage(url){
 			//Download file
 			var downloadUrl = 'http://iconmonstr.com' + e + n + i + s + r + o + a;
 			console.log(colors.blue.bgBlack('Download url:\t'+ downloadUrl));
+			var fileName = downloadUrl.split('/').slice(-1)[0];
 
-			wget.download(downloadUrl, '/temp').on('start', function(fileSize){
-				console.log(colors.green.bgBlack('Starting download:\t' + downloadUrl + '\t' + fileSize));
+			wget.download(downloadUrl, path.join(downloadPath, fileName)).on('start', function(fileSize){
+				console.log(colors.blue.bgBlack('Starting download:\t' +fileName + '\t' + fileSize + 'Kb'));
 			}).on('error', function(err){
-				console.log(colors.green.bgBlack('Error when downloading file:\t' + downloadUrl + '\t' + err));
+				console.log(colors.red.bgBlack('Error when downloading file:\t' + fileName + '\t' + err));
 			}).on('progress', function(progress){
-				console.log(colors.green.bgBlack('Progress: \t' + downloadUrl + '\t' + progress));
+				console.log(colors.yellow.bgBlack('Progress: \t' + fileName + '\t' + progress * 100 + '%'));
 			}).on('end', function(output){
-				console.log(colors.green.bgBlack('Finished download:\t' + downloadUrl + '\t' + output));
+				console.log(colors.green.bgBlack('Finished download:\t' + fileName + '\t' + output));
 			});
 
 			return;
@@ -56,16 +58,23 @@ function drillPage(url){
 		console.log(colors.cyan.bgBlack(collections.join('\n')));
 
 		collections.forEach( function(element, index) {
-			drillPage(element);
+			drillPage(element, downloadPath);
 		});
 
 		//Drill next page
 		var nextPageUrl = $('.pagination-next a').attr('href');
-		if(nextPageUrl) drillPage(nextPageUrl);	
+		if(nextPageUrl) drillPage(nextPageUrl, downloadPath);	
 	}
 
+
+//Temp dir
+var tempDir = path.normalize(path.join(__dirname, '/temp'));
+
+//Create temp dir if doens't exists
+fs.existsSync(tempDir) || fs.mkdirSync(tempDir);
+
 //Base url
-var url = 'http://iconmonstr.com/collections'; 
+var url = 'http://iconmonstr.com/weather/page/2/'; 
 
 //Starts the *magic*
-drillPage(url);
+drillPage(url, tempDir);
